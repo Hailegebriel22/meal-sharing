@@ -22,10 +22,12 @@ app.use(cors());
 
 router.use("/meals", mealsRouter);
 
+// Respond with all meals in the future (relative to the when datetime)
+
 app.get('/future-meals', async (req, res) => {
 
   const [row] = await knex.raw(' SELECT * FROM `meals`WHERE `WHEN` > now()')
-  //WHERE `WHEN` > now()
+  
   if (row.length === 0) {
     res.status(404).json({ message: 'No meals' })
   }
@@ -34,6 +36,7 @@ app.get('/future-meals', async (req, res) => {
   }
 })
 
+//Respond with all meals in the past (relative to the when datetime)
 
 app.get('/past-meals', async (req, res) => {
 
@@ -45,6 +48,9 @@ app.get('/past-meals', async (req, res) => {
     res.json(row)
   }
 })
+
+// Respond with all meals sorted by ID
+
 app.get('/all-meals', async (req, res) => {
 
   const [row] = await knex.raw('SELECT * FROM `meals` ORDER BY `id`')
@@ -56,6 +62,8 @@ app.get('/all-meals', async (req, res) => {
   }
 })
 
+// Respond with the first meal (meaning with the minimum id)
+
 app.get('/first-meals', async (req, res) => {
 
   const [row] = await knex.raw(' SELECT * FROM `meals` ORDER BY `id` LIMIT 1 ')
@@ -66,6 +74,9 @@ app.get('/first-meals', async (req, res) => {
     res.json(row)
   }
 })
+
+// Respond with the last meal (meaning with the maximum id)
+
 app.get('/last-meals', async (req, res) => {
 
   const [row] = await knex.raw(' SELECT * FROM `meals` ORDER BY `id` DESC LIMIT 1')
