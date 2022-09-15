@@ -24,9 +24,11 @@ app.use(cors());
 
 router.use("/meals", mealsRouter);
 
+
 router.get('/', async (req, res) => {
 
   const row = await knex.select('*').from(`meals`)
+
   if (row.length === 0) {
     res.status(404).json({ message: 'No meals' })
   }
@@ -35,7 +37,8 @@ router.get('/', async (req, res) => {
   }
 })
 
-///api/meals	POST	Adds a new meal to the database
+
+/// api/meals	POST	Adds a new meal to the database
 
 router.post('/meals', async (request, response) => {
 
@@ -118,18 +121,12 @@ router.get('/', async (req, res) => {
   const row = await knex.select('*').from(`Resevation`)
   if (row.length === 0) {
     res.status(404).json({ message: 'No Resevation' })
-  }
-  else {
-    res.json(row)
-  }
-})
+
+
 
 //   /api/reservations	POST	Adds a new reservation to the database
 
 router.post('/resevations', async (request, response) => {
-
-
-
 
   const [reservationsId] = await knex("Resevation").insert({
 
@@ -161,7 +158,9 @@ router.get("/reservations/:id", async (request, response) => {
     response.status(404).json({ error: "Reservation Not found" })
   }
 })
-// /api/reservations/:id	PUT	Updates the reservation by id
+
+//  /api/reservations/:id	PUT	Updates the reservation by id
+
 router.put('/reservations/:id', async (request, response) => {
 
   const updatedReservation = await knex('Reservation').where({ "id": request.params.id }).update({
@@ -181,8 +180,8 @@ router.put('/reservations/:id', async (request, response) => {
 });
 
 //   /api/reservations/:id	DELETE	Deletes the reservation by id
-router.delete('/reservations/:id', async (request, response) => {
 
+router.delete('/reservations/:id', async (request, response) => {
 
   reservationToDelete = await knex('meals').where({ "id": request.params.id }).del();
   if (reservationToDelete === 0 || reservationToDelete === 'undefined') {
@@ -194,12 +193,12 @@ router.delete('/reservations/:id', async (request, response) => {
 });
 
 
-
 if (process.env.API_PATH) {
   app.use(process.env.API_PATH, router);
 } else {
   throw "API_PATH is not set. Remember to set it in your .env file"
 }
+
 
 // for the frontend. Will first be covered in the react class
 app.use("*", (req, res) => {
@@ -207,9 +206,5 @@ app.use("*", (req, res) => {
 });
 
 module.exports = app;
-
-/////
-
-
 
 
