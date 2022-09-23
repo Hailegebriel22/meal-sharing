@@ -64,7 +64,7 @@ having (available_reservations > 0); */
     } else {
       response.status(404).json({ error: "Not found reservation" })
     }
-  }
+
 
 
   // title	String	Returns all meals that partially match the given title. 
