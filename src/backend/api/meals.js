@@ -118,7 +118,7 @@ having (available_reservations > 0); */
     }
   };
   //  limit	Number	Returns the given number of meals.	api/meals?limit=7
-  if (Object.keys(request.query).includes('limit')) {
+  if ('limit' in request.query) {
 
     if (isNaN(request.query.limit)) {
       response.status(404).json({ error: "requested query parameter is not a number" })
