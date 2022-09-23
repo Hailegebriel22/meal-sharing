@@ -8,7 +8,7 @@ const knex = require("../database");
 //  /api/meals/:meal_id/reviews	GET	Returns all reviews for a specific meal.
 //  Reviews
 
-router.get("/:meal_id/reviews", async (request, response) => {
+router.get("/:meal_id/reviews", async (request, response) => { 
 
 
   let mealReviews = await knex("Review").select().where({ "Review.meal_id": request.params.meal_id })
@@ -28,7 +28,7 @@ router.get("/", async (request, response) => {
 
   // maxPrice	Number	Returns all meals that are cheaper than maxPrice.	api/meals?maxPrice=90
 
-  if (Object.keys(request.query).includes("maxPrice")) {
+  if ("maxPrice" in request.query) {
     if (isNaN(request.query.maxPrice)) {
 
       response.status(404).json({ error: "max price is not a number" });
@@ -57,7 +57,7 @@ having (available_reservations > 0); */
   //
   //  .GROUPBY('meals.id').having('available_reservations', '>', '0');
 
-  if (Object.keys(request.query).includes('availableReservations') && typeof request.query.availableReservations == "boolean") {
+  if (('availableReservations' in request.query) && typeof request.query.availableReservations == "boolean") {
     if (request.query.availableReservations == "true") {
       res.json(availableReservations);
 
@@ -70,7 +70,7 @@ having (available_reservations > 0); */
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
 
-  if (Object.keys(request.query).includes('title')) {
+  if ('title' in request.query) {
 
     const titleMatch = await knex("meals").select().where('meals.title', 'like', `%${request.query.title}%`);
 
@@ -89,7 +89,7 @@ having (available_reservations > 0); */
 
 
 
-  if (Object.keys(request.query).includes('dateAfter')) {
+  if ('dateAfter' in request.query) {
     let regEx = /^\d{4}-\d{2}-\d{2}$/;
     const dateAfterMatch = await knex("meals").select().where('meals.when', '>', `${request.query.dateAfter}`);
 
@@ -105,7 +105,7 @@ having (available_reservations > 0); */
   // dateBefore	Date	Returns all meals where the date for when is before the given date.
   //	api/meals?dateBefore=2022-08-08
 
-  if (Object.keys(request.query).includes('dateBefore')) {
+  if ('dateBefore' in request.query) {
     let regEx = /^\d{4}-\d{2}-\d{2}$/;
     const dateBeforeMatch = await knex("meals").select().where('meals.when', '<', `${request.query.dateBefore}`);
 
@@ -134,13 +134,13 @@ having (available_reservations > 0); */
   //  Default sorting order = asc.	api/meals?sort_key=price
 
 
-  if (Object.keys(request.query).includes('sort_key')) {
+  if ('sort_key' in request.query) {
     const sortKeys = new Set(['price', 'when', 'max_reservations'])
 
     // sort_dir	String	Returns all meals sorted in the given direction. Only works combined with the sort_key and allows asc or desc.
     // 	api/meals?sort_key=price&sort_dir=desc
 
-    if (sortKeys.has(request.query.sort_key) && Object.keys(request.query).includes('sort_dir')) {
+    if (sortKeys.has(request.query.sort_key) && ('sort_dir' in request.query)) {
       const sortDir = await knex("meals").select().orderBy(`${request.query.sort_key}`, `${request.query.sort_dir}`);
       response.json(sortDir);
     } else if (sortKeys.has(request.query.sort_key)) {
