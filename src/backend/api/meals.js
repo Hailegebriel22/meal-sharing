@@ -1,6 +1,7 @@
 //const { json } = require("body-parser");
 const express = require("express");
 const { response } = require("../app");
+const { groupBy } = require("../database");
 const router = express.Router();
 const knex = require("../database");
 
@@ -8,7 +9,7 @@ const knex = require("../database");
 //  /api/meals/:meal_id/reviews	GET	Returns all reviews for a specific meal.
 //  Reviews
 
-router.get("/:meal_id/reviews", async (request, response) => { 
+router.get("/:meal_id/reviews", async (request, response) => {
 
 
   let mealReviews = await knex("Review").select().where({ "Review.meal_id": request.params.meal_id })
@@ -52,20 +53,29 @@ GROUP BY meals.id
 having (available_reservations > 0); */
 
   // KNEX
-  // const availableReservations = await knex('meals').select().where('max_reservations', '-', 'COALESCE(SUM(Reservation.number_of_guests),0)', 'AS', 'available_reservations');
-  // .leftjoin("Reservation", "meals.id ", "Reservation.meal_id")
-  //
-  //  .GROUPBY('meals.id').having('available_reservations', '>', '0');
+  /* const availableReservations = await knex('meals').join("Reservation", function () {
+   this
+     .on("meals.id ", "=", "Reservation.meal_id")
+ }, 'left').
+   select('meals.id', 'meals.title', 'meals.max_reservations', 'meals.max_reservations - COALESCE(SUM(Reservation.number_of_guests),0) as available_reservations').groupByRaw('meals.id').having('available_reservations', '>', '0');
+*/
+  const availableReservations = await knex('meals').join("Reservation", function () {
+    this
+      .on("meals.id ", "=", "Reservation.meal_id")
+  }, 'left')
+    .select('meals.id', 'meals.title', 'meals.max_reservations', knex.raw('?? - coalesce(sum(??), 0) as ?? ', ['meals.max_reservations', 'Reservation.number_of_guests', 'available_reservations']))
+    .groupByRaw('meals.id').having('available_reservations', '>', '0');
 
-  if (('availableReservations' in request.query) && typeof request.query.availableReservations == "boolean") {
+
+  if (('availableReservations' in request.query) && (typeof request.query.availableReservations == "boolean")) {
     if (request.query.availableReservations == "true") {
-      res.json(availableReservations);
+      response.json(availableReservations);
 
     } else {
       response.status(404).json({ error: "Not found reservation" })
     }
 
-
+  }
 
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter

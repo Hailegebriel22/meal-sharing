@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(cors());
-router.use("/reservations", resevationRouter);
+//router.use("/reservations", resevationRouter);
 router.use("/meals", mealsRouter);
 router.use("/reviews", reviewsRouter);
 
