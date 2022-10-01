@@ -1,7 +1,4 @@
-//const { json } = require("body-parser");
-const express = require("express");
-const { response } = require("../app");
-const { groupBy } = require("../database");
+const express = require("express")
 const router = express.Router();
 const knex = require("../database");
 
@@ -53,29 +50,55 @@ GROUP BY meals.id
 having (available_reservations > 0); */
 
   // KNEX
-  /* const availableReservations = await knex('meals').join("Reservation", function () {
-   this
-     .on("meals.id ", "=", "Reservation.meal_id")
- }, 'left').
-   select('meals.id', 'meals.title', 'meals.max_reservations', 'meals.max_reservations - COALESCE(SUM(Reservation.number_of_guests),0) as available_reservations').groupByRaw('meals.id').having('available_reservations', '>', '0');
-*/
-  const availableReservations = await knex('meals').join("Reservation", function () {
-    this
-      .on("meals.id ", "=", "Reservation.meal_id")
-  }, 'left')
-    .select('meals.id', 'meals.title', 'meals.max_reservations', knex.raw('?? - coalesce(sum(??), 0) as ?? ', ['meals.max_reservations', 'Reservation.number_of_guests', 'available_reservations']))
-    .groupByRaw('meals.id').having('available_reservations', '>', '0');
+  /* let query = knex("meal")
+​
+  if (typeof request.query.availableReservations === "string") {
+    const { availableReservations } = request.query
+​
+    if (!["true", "false"].includes(availableReservations)) {
+      response.status(400).json({ error: "availableReservations must be a boolean" })
+      return
+    }
+​
+    query = query
+      .leftJoin("reservation", "reservation.meal_id", "meal.id")
+      .select("meal.*")
+      .groupBy("meal.id")
+​
+    if (availableReservations === "true") {
+      // If max_reservations is null, I assume it means that we can make an unlimited amount of reservations.
+      query = query.havingRaw("max_reservations IS NULL OR SUM(COALESCE(reservation.number_of_guests, 0)) < max_reservations")
+    } else {
+      query = query.havingRaw("SUM(reservation.number_of_guests) >= max_reservations")
+    }
+  }
+​
+  console.log({ sql: query.toSQL().sql })
+​
+  const meals = await query
+  response.json(meals)*/
+
+  const meal = knex("meals")
+  const query = meal.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
+    .select("meals.*")
+    .groupBy("meals.id");
+  const availableReservations = await query.havingRaw("max_reservations IS NULL OR SUM(COALESCE(Reservation.number_of_guests, 0)) < max_reservations")
 
 
-  if (('availableReservations' in request.query) && (typeof request.query.availableReservations == "boolean")) {
+  if (('availableReservations' in request.query) && (typeof request.query.availableReservations == "string")) {
     if (request.query.availableReservations == "true") {
       response.json(availableReservations);
+      return
 
     } else {
       response.status(404).json({ error: "Not found reservation" })
-    }
 
+    }
   }
+
+
+
+
 
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
