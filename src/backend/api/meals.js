@@ -107,9 +107,9 @@ having (available_reservations > 0); */
 
     const titleMatch = await knex("meals").select().where('meals.title', 'like', `%${request.query.title}%`);
 
-    if (typeof request.query.title === 'string' && titleMatch.length > 0) {
+    if (typeof request.query.title === 'string' && titleMatch.length > 0) {   
 
-      response.json(titleMatch);
+      response.json(titleMatch); 
 
     } else {
       response.status(404).json({ error: " Title is not string or No match" })
