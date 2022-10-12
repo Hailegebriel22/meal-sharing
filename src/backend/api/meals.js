@@ -3,6 +3,9 @@ const router = express.Router();
 const knex = require("../database");
 
 
+
+
+
 //  /api/meals/:meal_id/reviews	GET	Returns all reviews for a specific meal.
 //  Reviews
 
@@ -49,34 +52,7 @@ LEFT  join Reservation ON  meals.id = Reservation.meal_id
 GROUP BY meals.id
 having (available_reservations > 0); */
 
-  // KNEX
-  /* let query = knex("meal")
-​
-  if (typeof request.query.availableReservations === "string") {
-    const { availableReservations } = request.query
-​
-    if (!["true", "false"].includes(availableReservations)) {
-      response.status(400).json({ error: "availableReservations must be a boolean" })
-      return
-    }
-​
-    query = query
-      .leftJoin("reservation", "reservation.meal_id", "meal.id")
-      .select("meal.*")
-      .groupBy("meal.id")
-​
-    if (availableReservations === "true") {
-      // If max_reservations is null, I assume it means that we can make an unlimited amount of reservations.
-      query = query.havingRaw("max_reservations IS NULL OR SUM(COALESCE(reservation.number_of_guests, 0)) < max_reservations")
-    } else {
-      query = query.havingRaw("SUM(reservation.number_of_guests) >= max_reservations")
-    }
-  }
-​
-  console.log({ sql: query.toSQL().sql })
-​
-  const meals = await query
-  response.json(meals)*/
+  
 
   const meal = knex("meals")
   const query = meal.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
@@ -95,10 +71,6 @@ having (available_reservations > 0); */
 
     }
   }
-
-
-
-
 
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
@@ -186,6 +158,78 @@ having (available_reservations > 0); */
       response.status(404).json({ error: "error" })
 
     }
+  }
+
+});
+
+///api/meals	POST	Adds a new meal to the database
+
+router.post('/', async (request, response) => {
+
+  const [mealsId] = await knex("meals").insert({
+
+    title: request.body.title || "Untitled",
+    description: request.body.description || "No contents",
+    location: request.body.location,
+    when: request.body.when,
+    max_reservations: request.body.max_reservations,
+    price: request.body.price,
+    created: request.body.created
+  })
+
+  if (mealsId === 0) {
+    res.status(404).json({ message: 'No meals' })
+  } else {
+    response.status(201).json({ message: "Created meals", id: mealsId })
+  }
+})
+
+// /api/meals/:id	GET	Returns the meal by id
+
+router.get("/:id", async (request, response) => {
+
+
+  let mealQuery = await knex.select('*').from(`meals`).where({ "meals.id": request.params.id }).limit(1)
+
+
+  if (mealQuery.length > 0) {
+    response.json(mealQuery)
+  } else {
+    response.status(404).json({ error: "Not found" })
+  }
+});
+
+// /api/meals/:id	PUT	Updates the meal by id
+
+router.put('/:id', async (request, response) => {
+
+  const updatedmeal = await knex('meals').where({ "id": request.params.id }).update({
+
+    title: request.body.title,
+    description: request.body.description,
+    location: request.body.location,
+    when: request.body.when,
+    max_reservations: request.body.max_reservations,
+    price: request.body.price,
+    created: request.body.created
+  })
+
+  if (updatedmeal === 0 || updatedmeal === undefined) {
+    response.status(404).json({ error: "unable to update" })
+  } else {
+    response.status(201).json({ id: request.params.id, message: "meal updated", })
+  }
+});
+
+//   /api/meals/:id	DELETE	Deletes the meal by id
+router.delete('/:id', async (request, response) => {
+
+
+  mealToDelete = await knex('meals').where({ "id": request.params.id }).del();
+  if (mealToDelete === 0 || mealToDelete === 'undefined') {
+    response.status(404).json({ error: "unable to delete" })
+  } else {
+    response.status(201).json({ id: request.params.id, message: "meal deleted" })
   }
 
 });
