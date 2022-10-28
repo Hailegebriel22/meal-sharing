@@ -17,7 +17,7 @@ router.get("/", async (request, response) => {
 // /api/reviews	POST	Adds a new reservation to the database
 
 router.post('/', async (request, response) => {
-    
+
 
     const [reviewsId] = await knex("Review").insert({
 
@@ -32,8 +32,8 @@ router.post('/', async (request, response) => {
     } catch (error) {
         throw error;
     }
-    
-    
+
+
 })
 
 // /api/reviews/:id	GET	Returns the reviews by id
@@ -57,13 +57,12 @@ router.put('/:id', async (request, response) => {
         title: request.body.title || "Untitled",
         description: request.body.description,
         meal_id: request.body.description,
-        stars: request.body.stars,
-        created_date: request.body.created_date
+        stars: request.body.stars
     })
-    if (updatedReview === 0 || updatedReview === 'undefined') {
+    if (updatedReview === 0 || typeof updatedReview === 'undefined') {
         response.status(404).json({ error: "unable to update review" })
     } else {
-        response.status(201).json({ id: request.params.id, message: "Review updated", })
+        response.status(204).json({ id: request.params.id, message: "Review updated", })
     }
 });
 
@@ -75,7 +74,7 @@ router.delete('/:id', async (request, response) => {
     if (reviewToDelete === 0 || reviewToDelete === 'undefined') {
         response.status(404).json({ error: "unable to delete a review" })
     } else {
-        response.status(201).json({ id: request.params.id, message: "Review deleted" })
+        response.status(204).json({ id: request.params.id, message: "Review deleted" })
     }
 
 });
