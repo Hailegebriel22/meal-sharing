@@ -11,21 +11,18 @@ const knex = require("../database");
 
 router.get("/:meal_id/reviews", async (request, response) => {
 
-
   let mealReviews = await knex("Review").select().where({ "Review.meal_id": request.params.meal_id })
 
+  return response.json(mealReviews)
+  //  response.status(404).json({ error: "Review Not found" })
 
-  if (mealReviews.length > 0) {
-    response.json(mealReviews)
-  } else {
-    response.status(404).json({ error: "Review Not found" })
-  }
 })
 
 
 
 
 router.get("/", async (request, response) => {
+  let meals = knex("meals")
 
   // maxPrice	Number	Returns all meals that are cheaper than maxPrice.	api/meals?maxPrice=90
 
@@ -33,12 +30,10 @@ router.get("/", async (request, response) => {
     if (isNaN(request.query.maxPrice)) {
 
       response.status(404).json({ error: "max price is not a number" });
-
-    } else {
-      const maxPriceMeals = await knex("meals").select().where('meals.price', '<', `${request.query.maxPrice}`);
-
-      response.json(maxPriceMeals);
+      return
     }
+    meals = meals.where('meals.price', '<', `${request.query.maxPrice}`);
+
 
   }
 
@@ -52,7 +47,7 @@ LEFT  join Reservation ON  meals.id = Reservation.meal_id
 GROUP BY meals.id
 having (available_reservations > 0); */
 
-  
+
 
   const meal = knex("meals")
   const query = meal.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
@@ -76,17 +71,7 @@ having (available_reservations > 0); */
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
 
   if ('title' in request.query) {
-
-    const titleMatch = await knex("meals").select().where('meals.title', 'like', `%${request.query.title}%`);
-
-    if (typeof request.query.title === 'string' && titleMatch.length > 0) {   
-
-      response.json(titleMatch); 
-
-    } else {
-      response.status(404).json({ error: " Title is not string or No match" })
-
-    }
+    meals = meals.where('meals.title', 'like', `%${request.query.title}%`);
   }
 
   // dateAfter	Date	Returns all meals where the date for when is after the given date.
@@ -127,7 +112,7 @@ having (available_reservations > 0); */
 
     if (isNaN(request.query.limit)) {
       response.status(404).json({ error: "requested query parameter is not a number" })
-
+      return
     } else {
       const limitQuery = await knex("meals").select().limit(`${request.query.limit}`);
 
@@ -160,6 +145,8 @@ having (available_reservations > 0); */
     }
   }
 
+  const results = await meals
+  response.json(results)
 });
 
 ///api/meals	POST	Adds a new meal to the database
