@@ -6,14 +6,15 @@ function App() {
   return (
     <Router>
       <Route exact path="/">
-        <p>test</p>
+        <p>test component</p>
       </Route>
       <Route exact path="/lol">
         <p>lol</p>
       </Route>
       <Route exact path="/test-component">
         <TestComponent></TestComponent>
-      </Route>
+
+      </Route> 
     </Router>
   );
 }
