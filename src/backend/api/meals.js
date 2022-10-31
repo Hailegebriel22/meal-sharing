@@ -81,14 +81,13 @@ having (available_reservations > 0); */
 
   if ('dateAfter' in request.query) {
     let regEx = /^\d{4}-\d{2}-\d{2}$/;
-    const dateAfterMatch = await knex("meals").select().where('meals.when', '>', `${request.query.dateAfter}`);
+    // const dateAfterMatch = meals.where('meals.when', '>', `${request.query.dateAfter}`);
 
-    if (request.query.dateAfter.match(regEx) && dateAfterMatch.length > 0) {
-
-      response.json(dateAfterMatch);
+    if (request.query.dateAfter.match(regEx)) {
+      meals = meals.where('meals.when', '>', `${request.query.dateAfter}`);
     } else {
       response.status(404).json({ error: "Match Not found" })
-
+      return
     }
   };
 
@@ -97,14 +96,13 @@ having (available_reservations > 0); */
 
   if ('dateBefore' in request.query) {
     let regEx = /^\d{4}-\d{2}-\d{2}$/;
-    const dateBeforeMatch = await knex("meals").select().where('meals.when', '<', `${request.query.dateBefore}`);
+    // const dateBeforeMatch = meals.where('meals.when', '<', `${request.query.dateBefore}`);
 
-    if (request.query.dateBefore.match(regEx) && dateBeforeMatch.length > 0) {
-
-      response.json(dateBeforeMatch);
+    if (request.query.dateBefore.match(regEx)) {
+      meals = meals.where('meals.when', '>', `${request.query.dateBefore}`);
     } else {
       response.status(404).json({ error: "Match Not found" })
-
+      return
     }
   };
   //  limit	Number	Returns the given number of meals.	api/meals?limit=7
@@ -114,9 +112,7 @@ having (available_reservations > 0); */
       response.status(404).json({ error: "requested query parameter is not a number" })
       return
     } else {
-      const limitQuery = await knex("meals").select().limit(`${request.query.limit}`);
-
-      response.json(limitQuery);
+      meals = meals.limit(`${request.query.limit}`);
     }
   }
 
@@ -131,22 +127,15 @@ having (available_reservations > 0); */
     // 	api/meals?sort_key=price&sort_dir=desc
 
     if (sortKeys.has(request.query.sort_key) && ('sort_dir' in request.query)) {
-      const sortDir = await knex("meals").select().orderBy(`${request.query.sort_key}`, `${request.query.sort_dir}`);
-      response.json(sortDir);
-    } else if (sortKeys.has(request.query.sort_key)) {
-      const sortDirAsc = await knex("meals").select().orderBy(`${request.query.sort_key}`, 'asc');
-
-      response.json(sortDirAsc);
-    }
-
-    else {
-      response.status(404).json({ error: "error" })
-
+      meals = meals.orderBy(`${request.query.sort_key}`, `${request.query.sort_dir}`);
+    } else {
+      (sortKeys.has(request.query.sort_key))
+      meals = meals.orderBy(`${request.query.sort_key}`, 'asc');
     }
   }
 
-  const results = await meals
-  response.json(results)
+  const mealResults = await meals
+  response.json(mealResults)
 });
 
 ///api/meals	POST	Adds a new meal to the database
