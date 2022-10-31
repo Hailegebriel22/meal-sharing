@@ -49,7 +49,7 @@ having (available_reservations > 0); */
 
 
 
-  const meal = knex("meals")
+  /* const meal = knex("meals")
   const query = meal.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
     .select("meals.*")
     .groupBy("meals.id");
@@ -66,7 +66,7 @@ having (available_reservations > 0); */
 
     }
   }
-
+ */
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
 
@@ -99,7 +99,7 @@ having (available_reservations > 0); */
     // const dateBeforeMatch = meals.where('meals.when', '<', `${request.query.dateBefore}`);
 
     if (request.query.dateBefore.match(regEx)) {
-      meals = meals.where('meals.when', '>', `${request.query.dateBefore}`);
+      meals = meals.where('meals.when', '<', `${request.query.dateBefore}`);
     } else {
       response.status(404).json({ error: "Match Not found" })
       return
