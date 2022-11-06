@@ -14,6 +14,7 @@ const knex = require("knex")({
 });
 
 // Check that the connection works
+
 knex.raw('SELECT * FROM  meals').then(() => {
   console.log(`connection to db successful! `);
 });
