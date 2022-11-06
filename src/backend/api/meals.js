@@ -1,28 +1,9 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router();
 const knex = require("../database");
 
-
-
-
-
-//  /api/meals/:meal_id/reviews	GET	Returns all reviews for a specific meal.
-//  Reviews
-
-router.get("/:meal_id/reviews", async (request, response) => {
-
-  let mealReviews = await knex("Review").select().where({ "Review.meal_id": request.params.meal_id })
-
-  return response.json(mealReviews)
-  //  response.status(404).json({ error: "Review Not found" })
-
-})
-
-
-
-
 router.get("/", async (request, response) => {
-  let meals = knex("meals")
+  let meals = knex("meals");
 
   // maxPrice	Number	Returns all meals that are cheaper than maxPrice.	api/meals?maxPrice=90
 
@@ -48,25 +29,22 @@ GROUP BY meals.id
 having (available_reservations > 0); */
 
 
-
-  /* const meal = knex("meals")
-  const query = meal.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
+   
+  const query = meals.leftJoin("Reservation", "Reservation.meal_id", "meals.id")
     .select("meals.*")
     .groupBy("meals.id");
   const availableReservations = await query.havingRaw("max_reservations IS NULL OR SUM(COALESCE(Reservation.number_of_guests, 0)) < max_reservations")
 
 
   if (('availableReservations' in request.query) && (typeof request.query.availableReservations == "string")) {
-    if (request.query.availableReservations == "true") {
-      response.json(availableReservations);
-      return
-
-    } else {
+    if (request.query.availableReservations == "false") {
       response.status(404).json({ error: "Not found reservation" })
+      return
+    } 
+    meals=availableReservations
 
-    }
   }
- */
+ 
   // title	String	Returns all meals that partially match the given title. 
   // Rød grød will match the meal with the title Rød grød med fløde.api/meals?title=Indian%20platter
 
@@ -209,6 +187,18 @@ router.delete('/:id', async (request, response) => {
   }
 
 });
+
+//  /api/meals/:meal_id/reviews	GET	Returns all reviews for a specific meal.
+//  Reviews
+
+router.get("/:meal_id/reviews", async (request, response) => {
+
+  let mealReviews = await knex("Review").select().where({ "Review.meal_id": request.params.meal_id })
+
+  return response.json(mealReviews)
+  //  response.status(404).json({ error: "Review Not found" })
+
+})
 
 
 
