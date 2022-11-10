@@ -32,10 +32,10 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (request, response) => {
 
-  const [reservationsId] = await knex("Resevation").insert({
+  const [reservationsId] = await knex("Reservation").insert({
 
     number_of_guests: request.body.number_of_guests || "Untitled",
-    meal_id: request.body.description || "No contents",
+    meal_id: request.body.meal_id || "No contents",
     created_date: request.body.created_date,
     contact_phonenumber: request.body.contact_phonenumber,
     contact_name: request.body.contact_name,

@@ -5,7 +5,6 @@ const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const outputDirectory = 'dist';
-
 module.exports = {
   entry: ['babel-polyfill', './src/client/index.js'],
   output: {
@@ -38,7 +37,6 @@ module.exports = {
     extensions: ['*', '.js', '.jsx'],
   },
   devServer: {
-    static: '/',
     historyApiFallback: true,
     port: parseInt(process.env.CLIENT_PORT, 10),
     open: process.env.OPEN_BROWSER === 'true' ? true : false,
