@@ -4,6 +4,8 @@ const router = express.Router();
 const path = require("path");
 const resevationRouter = require("./api/reservations");
 const mealsRouter = require("./api/meals");
+const reviewsRouter = require("./api/reviews");
+
 
 
 
@@ -23,6 +25,8 @@ app.use(express.json());
 app.use(cors());
 router.use("/reservations", resevationRouter);
 router.use("/meals", mealsRouter);
+router.use("/reviews", reviewsRouter);
+
 
 
 

@@ -5,7 +5,6 @@ const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const outputDirectory = 'dist';
-
 module.exports = {
   entry: ['babel-polyfill', './src/client/index.js'],
   output: {

@@ -1,20 +1,74 @@
-* {
-    box-sizing: border-box;
+body{
+    background-color:rgb(207, 228, 228); 
+    background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-food-western-food-simple-poster-background-image_25130.jpg");
+    background-position: right;
+    background-repeat: repeat-y;
+
 }
-.navbar {
+
+.home-image{
+        height:50vh;
+        width: 100%;
+         }
+
+.navBar {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-around;
+            background-color: aliceblue;
+        
+        }
+        
+.icon{
+            width: 40px;
+        
+        }
+.nav-links {
+            display: flex;
+            justify-content: space-around;
+        }    
+              
+.footer  {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 12px;
+    gap: 15px;
+    background-color: aliceblue;
+    margin-top: 10px;
 }
-.footer * {
-    display: flex;
-flex-direction: row;
-}
+
 input {
     padding: 5px 15px;
     display:flex;
     align-items:flex-end;
     margin-bottom: 10px;
 }
-.return-btn{
+.return-btn, .addreview-btn, .add-meal,.addMeal-return-btn {
     margin-top: 10px;
 }
+@media screen and (max-width: 600px) {
+    body{
+        background-image: none;
+margin-left: 3rem;    }
+    .navBar {    
+             flex-direction: column;
+             gap: 5px;
+                
+            }       
+    .introduction-section{
+        font-size: 15px;
+    }
+
+    .footer  {
+        flex-direction: column;
+    }
+    .home-image {
+        object-fit: cover;
+        height:30vh;
+        width: 100%;
+    }
+
+  }
+
+ 
