@@ -4,10 +4,9 @@ const router = express.Router();
 const path = require("path");
 const knex = require("../backend/database");
 const mealsRouter = require("./api/meals");
-const reviewsRouter = require("./api/reviews");
-
+const reviewsRouter = require("./api/reviews")
 const buildPath = path.join(__dirname, "../../dist");
-const port = process.env.PORT || 3000; 
+const port = process.env.PORT || 3000;
 const cors = require("cors");
 
 
@@ -37,8 +36,8 @@ if (process.env.API_PATH) {
 
 // for the frontend. Will first be covered in the react class
 app.use("*", (req, res) => {
-   res.sendFile(path.join(`${buildPath}/index.html`));
- });
+    res.sendFile(path.join(`${buildPath}/index.html`));
+});
 
 module.exports = app;
 
